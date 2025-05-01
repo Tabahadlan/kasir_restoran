@@ -1,0 +1,68 @@
+CREATE DATABASE IF NOT EXISTS kasir_restoran;
+USE kasir_restoran;
+
+-- Tabel user
+CREATE TABLE user (
+    iduser INT AUTO_INCREMENT PRIMARY KEY,
+    namauser CHAR(50),
+    password VARCHAR(255),
+    role ENUM('admin', 'waiter', 'kasir', 'owner') NOT NULL
+);
+
+-- Tabel meja
+CREATE TABLE meja (
+    idmeja INT AUTO_INCREMENT PRIMARY KEY,
+    nomormeja INT NOT NULL,
+    status ENUM('kosong', 'terisi') DEFAULT 'kosong'
+);
+
+-- Tabel menu
+CREATE TABLE menu (
+    idmenu INT AUTO_INCREMENT PRIMARY KEY,
+    namamenu CHAR(50),
+    harga INT
+);
+
+-- Tabel pelanggan
+CREATE TABLE pelanggan (
+    idpelanggan INT AUTO_INCREMENT PRIMARY KEY,
+    namapelanggan CHAR(50),
+    jeniskelamin BOOLEAN, -- 0 = Pria, 1 = Wanita
+    nohp CHAR(15),
+    alamat CHAR(100)
+);
+
+-- Tabel pesanan
+CREATE TABLE pesanan (
+    idpesanan INT AUTO_INCREMENT PRIMARY KEY,
+    idmeja INT,
+    idpelanggan INT,
+    iduser INT,
+    tanggal DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (idmeja) REFERENCES meja(idmeja),
+    FOREIGN KEY (idpelanggan) REFERENCES pelanggan(idpelanggan),
+    FOREIGN KEY (iduser) REFERENCES user(iduser)
+);
+
+-- Tabel detail_pesanan
+CREATE TABLE detail_pesanan (
+    iddetail INT AUTO_INCREMENT PRIMARY KEY,
+    idpesanan INT,
+    idmenu INT,
+    jumlah INT,
+    FOREIGN KEY (idpesanan) REFERENCES pesanan(idpesanan),
+    FOREIGN KEY (idmenu) REFERENCES menu(idmenu)
+);
+
+-- Tabel transaksi
+CREATE TABLE transaksi (
+    idtransaksi INT AUTO_INCREMENT PRIMARY KEY,
+    idpesanan INT,
+    total INT,
+    bayar INT,
+    kembalian INT,
+    tanggal DATETIME DEFAULT CURRENT_TIMESTAMP,
+    iduser INT,
+    FOREIGN KEY (idpesanan) REFERENCES pesanan(idpesanan),
+    FOREIGN KEY (iduser) REFERENCES user(iduser)
+);
